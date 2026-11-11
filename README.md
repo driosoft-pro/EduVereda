@@ -6,6 +6,37 @@ El diseño visual e interactivo sigue fielmente los wireframes y mockups ubicado
 
 ---
 
+## 📸 Visualización de la Demo y Aplicación
+
+### 1. Modo Vista Doble (`SPLIT_DEMO` — Estudiante + Docente en Simultáneo)
+Permite evaluar en una sola pantalla el flujo completo de extremo a extremo: resolución de cápsulas en el teléfono del estudiante, generación del Código QR firmado con **HMAC-SHA256** y captura óptica inmediata en la tableta de la docente.
+
+![Vista Doble Split-Screen de EduVereda](./img/vistaDoble.png)
+
+---
+
+### 2. Vistas por Rol del Ecosistema
+
+| Rol Estudiante (`EduVereda App`) | Rol Docente (`EduVereda Docente / VeredaSync`) |
+| :---: | :---: |
+| ![Rol Estudiante](./img/RolEstudiante.png) | ![Rol Docente](./img/rolDocente.png) |
+| *Cápsulas de Matemáticas, Español, Inglés, Química y Estadística, guardado local en SQLite y generación de QR dinámico.* | *Escáner óptico QR (< 1.8 s), alerta «¡Pip!» + vibración, notas registradas, toma de asistencia y exportación CSV/JSON.* |
+
+#### Panel de Administración Escolar (`Rol Administrador` — CRUD SQLite)
+Gestión local 100% *Offline* para crear, editar y eliminar **Estudiantes** y **Maestros**, asignar el docente titular de la tableta e inspeccionar la bitácora de sentencias SQL parametrizadas:
+
+![Rol Administrador CRUD](./img/rolAdministrador.png)
+
+---
+
+### 3. Mockups y Wireframes de Diseño Original (`design/`)
+
+| Mockups de Alta Fidelidad (`design/style-mockups.jpeg`) | Wireframes de Baja Fidelidad (`design/mockups.jpeg`) |
+| :---: | :---: |
+| ![Mockups de Alta Fidelidad](./design/style-mockups.jpeg) | ![Wireframes de Baja Fidelidad](./design/mockups.jpeg) |
+
+---
+
 ## 🎯 Módulos y Funcionalidades Principales
 
 1. **Módulo A — EduVereda App (`STUDENT`):**
@@ -35,6 +66,11 @@ Todos los archivos están modularizados y comentados, manteniéndose muy por deb
 
 ```text
 demo/
+├── img/
+│   ├── vistaDoble.png                    # Captura del modo Split-Screen (Estudiante + Docente)
+│   ├── RolEstudiante.png                 # Captura del Módulo A (EduVereda App)
+│   ├── rolDocente.png                    # Captura del Módulo B (EduVereda Docente / VeredaSync)
+│   └── rolAdministrador.png              # Captura del Módulo C (Panel Admin CRUD SQLite)
 ├── design/
 │   ├── mockups.jpeg                      # Wireframes de baja fidelidad (Inicio, Juego, Aviso SQLite, Escáner)
 │   └── style-mockups.jpeg                # Mockups de alta fidelidad (Teléfono Estudiante y Tableta Docente)
