@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "EduVereda - Innovación Frugal Rural",
+    "slug": "eduvereda-multiplatform-demo",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "primaryColor": "#1B365D",
+    "platforms": ["web", "android", "ios"],
+    "android": {
+      "package": "co.edu.eduvereda.app",
+      "permissions": ["CAMERA", "VIBRATE"]
+    },
+    "ios": {
+      "bundleIdentifier": "co.edu.eduvereda.app",
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "name": "EduVereda - Demo Multiplataforma (Estudiante + Docente)",
+      "shortName": "EduVereda",
+      "lang": "es-CO",
+      "themeColor": "#1B365D",
+      "backgroundColor": "#F4F6F9"
+    }
+  }
+}

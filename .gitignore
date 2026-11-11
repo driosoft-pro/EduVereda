@@ -1,0 +1,30 @@
+# Dependencias y compilación
+node_modules/
+.pnp/
+.pnp.js
+dist/
+web-build/
+
+# Expo y React Native
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Nix y direnv
+.direnv/
+result
+result-*
+
+# Cachés y sistema
+*.log
+npm-debug.*
+pnpm-debug.*
+.DS_Store
+*.db
+*.sqlite
+*.sqlite3
