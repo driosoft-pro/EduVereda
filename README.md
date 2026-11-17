@@ -33,7 +33,7 @@ Gestión local 100% *Offline* para crear, editar y eliminar **Estudiantes** y **
 
 | Mockups de Alta Fidelidad (`design/style-mockups.jpeg`) | Wireframes de Baja Fidelidad (`design/mockups.jpeg`) |
 | :---: | :---: |
-| ![Mockups de Alta Fidelidad](./design/style-mockups.jpeg) | ![Wireframes de Baja Fidelidad](./design/mockups.jpeg) |
+| ![Mockups de Alta Fidelidad](./design/style-mockups.jpeg?v=2) | ![Wireframes de Baja Fidelidad](./design/mockups.jpeg?v=2) |
 
 ---
 
