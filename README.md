@@ -65,7 +65,7 @@ Gestión local 100% *Offline* para crear, editar y eliminar **Estudiantes** y **
 Todos los archivos están modularizados y comentados, manteniéndose muy por debajo del límite de 700 líneas por archivo:
 
 ```text
-demo/
+EduVereda/
 ├── img/
 │   ├── vistaDoble.png                    # Captura del modo Split-Screen (Estudiante + Docente)
 │   ├── RolEstudiante.png                 # Captura del Módulo A (EduVereda App)
@@ -76,83 +76,108 @@ demo/
 │   └── style-mockups.jpeg                # Mockups de alta fidelidad (Teléfono Estudiante y Tableta Docente)
 ├── docs/
 │   └── requerimientos-sistema-eduvereda.md # Especificación formal de requerimientos del sistema
-├── flake.nix                             # Entorno reproducible Nix (Node.js 22, pnpm, SQLite, Watchman)
+├── src/
+│   ├── domain/                           # 1. CAPA DE DOMINIO (Entidades puras e Interfaces)
+│   │   ├── entities/
+│   │   │   ├── Role.ts                   # 4 Roles (SPLIT_DEMO, STUDENT, TEACHER, ADMIN) y perfiles
+│   │   │   ├── StudentMission.ts         # Misiones de Matemáticas, Español, Inglés, Química y Estadística
+│   │   │   ├── AttendanceRecord.ts       # Entidades de Toma de Asistencia (Presente, Tardanza, Ausente)
+│   │   │   └── GradeRecord.ts            # Contrato QR VeredaSync v1 y Registro de Calificaciones
+│   │   ├── repositories/
+│   │   │   ├── IStudentRepository.ts     # Contrato de persistencia de progreso del estudiante
+│   │   │   ├── ITeacherRepository.ts     # Contrato de notas y bloqueo Anti-Replay
+│   │   │   ├── IRosterRepository.ts      # Contrato CRUD de Estudiantes y Maestros
+│   │   │   └── IAttendanceRepository.ts  # Contrato de Toma de Asistencia escolar
+│   │   └── services/
+│   │       ├── ISecurityService.ts       # Contrato HMAC-SHA256, nonces y sanitización CSV
+│   │       ├── IFeedbackService.ts       # Contrato de sonido «¡Pip!» y vibración háptica
+│   │       └── IExportService.ts         # Contrato de exportación CSV / JSON
+│   │
+│   ├── application/                      # 2. CAPA DE APLICACIÓN (Casos de Uso desacoplados)
+│   │   ├── data/
+│   │   │   └── ruralMissionsCatalog.ts   # Catálogo de 5 materias básicas y nóminas semilla
+│   │   └── useCases/
+│   │       ├── CompleteMissionStepUseCase.ts   # Guarda respuestas y calcula nota en SQLite
+│   │       ├── GenerateSignedQrUseCase.ts      # Empaqueta y firma el QR con HMAC-SHA256
+│   │       ├── ProcessScannedQrUseCase.ts      # Verifica QR, guarda nota + asistencia y dispara alerta
+│   │       ├── ManageRosterCrudUseCase.ts      # Lógica CRUD de Estudiantes y Maestros (Rol Admin)
+│   │       ├── ManageAttendanceUseCase.ts      # Lógica de Toma de Asistencia escolar
+│   │       └── ExportClassroomGradesUseCase.ts # Exportación segura de notas a CSV / JSON
+│   │
+│   ├── infrastructure/                   # 3. CAPA DE INFRAESTRUCTURA (Implementaciones SQLite / Web / Nativo)
+│   │   ├── database/
+│   │   │   └── sqliteEngine.ts           # Motor transaccional y bitácora de consultas parametrizadas
+│   │   ├── repositories/
+│   │   │   ├── SqliteStudentRepository.ts
+│   │   │   ├── SqliteTeacherRepository.ts
+│   │   │   ├── SqliteRosterRepository.ts       # Tabla SQLite de Estudiantes y Maestros (CRUD)
+│   │   │   └── SqliteAttendanceRepository.ts   # Tabla SQLite de Asistencia Diaria
+│   │   ├── security/
+│   │   │   └── HmacSecurityService.ts          # Firma HMAC-SHA256 con expo-crypto
+│   │   ├── feedback/
+│   │   │   └── MultisensoryFeedbackService.ts  # Síntesis Web Audio API (880Hz) + expo-haptics
+│   │   └── export/
+│   │       └── LocalFileExportService.ts       # Descarga local de archivos CSV y JSON
+│   │
+│   └── presentation/                     # 4. CAPA DE PRESENTACIÓN (Interfaces React Native WCAG AAA)
+│       ├── theme/
+│       │   └── colors.ts                 # Paleta solar (#1B365D azul marino, #7CB342 verde manzana)
+│       ├── context/
+│       │   └── AppContainerContext.tsx   # Contenedor DI y estado global reactivo
+│       ├── components/
+│       │   ├── common/
+│       │   │   ├── SolarBanner.tsx             # Banner RF-E02 «Progreso Seguro en SQLite»
+│       │   │   └── RoleSwitcherBar.tsx         # Conmutador de los 4 Roles del sistema
+│       │   ├── student/
+│       │   │   ├── StudentHomeMissionsView.tsx # Tarjetas de misión estilo design/style-mockups.jpeg
+│       │   │   ├── MissionQuestionCard.tsx     # Juego de preguntas (A, B, C, D)
+│       │   │   ├── SqliteSavedPopupModal.tsx   # Ventana emergente de confirmación SQLite (Wireframe 3)
+│       │   │   └── AchievementQrCard.tsx       # Modal de Código QR firmado y botón verde de 60px
+│       │   ├── teacher/
+│       │   │   ├── OpticalScannerCard.tsx      # Visor óptico QR y simulador de adulteración HMAC
+│       │   │   ├── AttendanceTrackerCard.tsx   # Planilla interactiva de Toma de Asistencia
+│       │   │   └── ClassroomGradesTable.tsx    # Tabla consolidada y exportación CSV/JSON
+│       │   └── admin/
+│       │       ├── StudentCrudManager.tsx      # Formulario y tabla CRUD de Estudiantes
+│       │       └── TeacherCrudManager.tsx      # Formulario y tabla CRUD de Maestros
+│       └── screens/
+│           ├── StudentScreen.tsx         # Smartphone del Estudiante (Módulo A)
+│           ├── TeacherScreen.tsx         # Tableta Horizontal de la Docente (Módulo B)
+│           ├── AdminScreen.tsx           # Panel Administrador con CRUDs (Módulo C)
+│           └── MainDemoScreen.tsx        # Orquestador Split-Screen y Selector de Roles
 ├── .npmrc                                # Configuración pnpm (node-linker=hoisted) para Expo/Metro
+├── app.json                              # Configuración de la aplicación Expo
 ├── App.tsx                               # Proveedor raíz de Inyección de Dependencias
-└── src/
-    ├── domain/                           # 1. CAPA DE DOMINIO (Entidades puras e Interfaces)
-    │   ├── entities/
-    │   │   ├── Role.ts                   # 4 Roles (SPLIT_DEMO, STUDENT, TEACHER, ADMIN) y perfiles
-    │   │   ├── StudentMission.ts         # Misiones de Matemáticas, Español, Inglés, Química y Estadística
-    │   │   ├── AttendanceRecord.ts       # Entidades de Toma de Asistencia (Presente, Tardanza, Ausente)
-    │   │   └── GradeRecord.ts            # Contrato QR VeredaSync v1 y Registro de Calificaciones
-    │   ├── repositories/
-    │   │   ├── IStudentRepository.ts     # Contrato de persistencia de progreso del estudiante
-    │   │   ├── ITeacherRepository.ts     # Contrato de notas y bloqueo Anti-Replay
-    │   │   ├── IRosterRepository.ts      # Contrato CRUD de Estudiantes y Maestros
-    │   │   └── IAttendanceRepository.ts  # Contrato de Toma de Asistencia escolar
-    │   └── services/
-    │       ├── ISecurityService.ts       # Contrato HMAC-SHA256, nonces y sanitización CSV
-    │       ├── IFeedbackService.ts       # Contrato de sonido «¡Pip!» y vibración háptica
-    │       └── IExportService.ts         # Contrato de exportación CSV / JSON
-    │
-    ├── application/                      # 2. CAPA DE APLICACIÓN (Casos de Uso desacoplados)
-    │   ├── data/
-    │   │   └── ruralMissionsCatalog.ts   # Catálogo de 5 materias básicas y nóminas semilla
-    │   └── useCases/
-    │       ├── CompleteMissionStepUseCase.ts   # Guarda respuestas y calcula nota en SQLite
-    │       ├── GenerateSignedQrUseCase.ts      # Empaqueta y firma el QR con HMAC-SHA256
-    │       ├── ProcessScannedQrUseCase.ts      # Verifica QR, guarda nota + asistencia y dispara alerta
-    │       ├── ManageRosterCrudUseCase.ts      # Lógica CRUD de Estudiantes y Maestros (Rol Admin)
-    │       ├── ManageAttendanceUseCase.ts      # Lógica de Toma de Asistencia escolar
-    │       └── ExportClassroomGradesUseCase.ts # Exportación segura de notas a CSV / JSON
-    │
-    ├── infrastructure/                   # 3. CAPA DE INFRAESTRUCTURA (Implementaciones SQLite / Web / Nativo)
-    │   ├── database/
-    │   │   └── sqliteEngine.ts           # Motor transaccional y bitácora de consultas parametrizadas
-    │   ├── repositories/
-    │   │   ├── SqliteStudentRepository.ts
-    │   │   ├── SqliteTeacherRepository.ts
-    │   │   ├── SqliteRosterRepository.ts       # Tabla SQLite de Estudiantes y Maestros (CRUD)
-    │   │   └── SqliteAttendanceRepository.ts   # Tabla SQLite de Asistencia Diaria
-    │   ├── security/
-    │   │   └── HmacSecurityService.ts          # Firma HMAC-SHA256 con expo-crypto
-    │   ├── feedback/
-    │   │   └── MultisensoryFeedbackService.ts  # Síntesis Web Audio API (880Hz) + expo-haptics
-    │   └── export/
-    │       └── LocalFileExportService.ts       # Descarga local de archivos CSV y JSON
-    │
-    └── presentation/                     # 4. CAPA DE PRESENTACIÓN (Interfaces React Native WCAG AAA)
-        ├── theme/
-        │   └── colors.ts                 # Paleta solar (#1B365D azul marino, #7CB342 verde manzana)
-        ├── context/
-        │   └── AppContainerContext.tsx   # Contenedor DI y estado global reactivo
-        ├── components/
-        │   ├── common/
-        │   │   ├── SolarBanner.tsx             # Banner RF-E02 «Progreso Seguro en SQLite»
-        │   │   └── RoleSwitcherBar.tsx         # Conmutador de los 4 Roles del sistema
-        │   ├── student/
-        │   │   ├── StudentHomeMissionsView.tsx # Tarjetas de misión estilo design/style-mockups.jpeg
-        │   │   ├── MissionQuestionCard.tsx     # Juego de preguntas (A, B, C, D)
-        │   │   ├── SqliteSavedPopupModal.tsx   # Ventana emergente de confirmación SQLite (Wireframe 3)
-        │   │   └── AchievementQrCard.tsx       # Modal de Código QR firmado y botón verde de 60px
-        │   ├── teacher/
-        │   │   ├── OpticalScannerCard.tsx      # Visor óptico QR y simulador de adulteración HMAC
-        │   │   ├── AttendanceTrackerCard.tsx   # Planilla interactiva de Toma de Asistencia
-        │   │   └── ClassroomGradesTable.tsx    # Tabla consolidada y exportación CSV/JSON
-        │   └── admin/
-        │       ├── StudentCrudManager.tsx      # Formulario y tabla CRUD de Estudiantes
-        │       └── TeacherCrudManager.tsx      # Formulario y tabla CRUD de Maestros
-        └── screens/
-            ├── StudentScreen.tsx         # Smartphone del Estudiante (Módulo A)
-            ├── TeacherScreen.tsx         # Tableta Horizontal de la Docente (Módulo B)
-            ├── AdminScreen.tsx           # Panel Administrador con CRUDs (Módulo C)
-            └── MainDemoScreen.tsx        # Orquestador Split-Screen y Selector de Roles
-```
+├── flake.lock                            # Versiones fijadas del entorno Nix
+├── flake.nix                             # Entorno reproducible Nix (Node.js 22, pnpm, SQLite, Watchman)
+├── index.ts                              # Punto de entrada principal de Expo
+├── package.json                          # Dependencias y scripts del proyecto
+├── pnpm-lock.yaml                        # Árbol de dependencias bloqueado de pnpm
+└── tsconfig.json                         # Configuración de TypeScript
 
 ---
 
-## 🚀 Ejecución Rápida con Nix y `pnpm`
+## 🚀 Ejecución Rápida (Windows, Linux / Nix y `pnpm`)
+
+
+### Opción A: Ejecución en Windows (PowerShell / VS Code)
+
+**Requisitos previos:** Tener instalado [Node.js](https://nodejs.org/) (v20 o superior) y `pnpm` (`npm install -g pnpm`).
+
+```bash
+# 1. Instalar dependencias (solo la primera vez)
+pnpm install
+
+# 2. Iniciar la Demo Web interactiva (abrirá http://localhost:8081)
+pnpm run web
+
+# 3. (Opcional) Verificar compilación limpia de TypeScript
+pnpm run typecheck
+
+```
+*Nota para detener el servidor: En la terminal donde ejecutaste el proyecto, presiona Ctrl + C (confirma con S si PowerShell lo solicita) para liberar el puerto 8081 y los recursos del sistema.*
+
+### Opción B: Ejecución en Linux / macOS / WSL con Nix
 
 ```bash
 # 1. Activar el entorno reproducible de Nix
@@ -167,3 +192,5 @@ pnpm run web
 # 4. Verificar compilación limpia de TypeScript
 pnpm run typecheck
 ```
+
+*(Nota adicional: en la sección `🏛️ Estructura del Proyecto` de tu `README.md`[cite: 2], recuerda también quitar el nivel `demo/` del árbol si todos los archivos están en la raíz `EduVereda/`[cite: 4] para que coincida 100% con el repositorio).*
