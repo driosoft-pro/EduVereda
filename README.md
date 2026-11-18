@@ -154,6 +154,7 @@ EduVereda/
 ├── package.json                          # Dependencias y scripts del proyecto
 ├── pnpm-lock.yaml                        # Árbol de dependencias bloqueado de pnpm
 └── tsconfig.json                         # Configuración de TypeScript
+```
 
 ---
 
@@ -177,6 +178,8 @@ pnpm run typecheck
 ```
 *Nota para detener el servidor: En la terminal donde ejecutaste el proyecto, presiona Ctrl + C (confirma con S si PowerShell lo solicita) para liberar el puerto 8081 y los recursos del sistema.*
 
+---
+
 ### Opción B: Ejecución en Linux / macOS / WSL con Nix
 
 ```bash
@@ -192,5 +195,3 @@ pnpm run web
 # 4. Verificar compilación limpia de TypeScript
 pnpm run typecheck
 ```
-
-*(Nota adicional: en la sección `🏛️ Estructura del Proyecto` de tu `README.md`[cite: 2], recuerda también quitar el nivel `demo/` del árbol si todos los archivos están en la raíz `EduVereda/`[cite: 4] para que coincida 100% con el repositorio).*
